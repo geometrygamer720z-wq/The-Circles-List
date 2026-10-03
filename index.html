@@ -1,79 +1,437 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=1024" />
-        <title>Your List Name</title>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Circles List</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --accent: #00ffcc;
+            --danger: #ff4444;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            background: #181818;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--accent);
+        }
+        /* Menú de 3 puntos en la esquina superior derecha */
+        .menu-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .menu-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.4); /* Un poco opacos */
+            font-size: 1.8rem;
+            cursor: pointer;
+            letter-spacing: 2px;
+            padding: 0 5px;
+        }
+        .menu-btn:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 40px;
+            background: #222;
+            border: 1px solid #444;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.7);
+            z-index: 100;
+            min-width: 150px;
+        }
+        .dropdown-menu button {
+            width: 100%;
+            background: none;
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .dropdown-menu button:hover {
+            background: #333;
+        }
+        
+        /* Contenedor principal de la lista */
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin-top: 20px;
+            padding-bottom: 50px;
+        }
+        .category-title {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        .level-card {
+            background: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .level-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .level-thumb {
+            width: 90px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            background: #333;
+        }
+        .level-details h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.1rem;
+        }
+        .level-details p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+        .admin-controls {
+            display: flex;
+            gap: 8px;
+        }
+        .admin-controls button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-edit { background: #ffaa00; color: #000; }
+        .btn-delete { background: var(--danger); color: #fff; }
+        
+        /* Panel de Administración */
+        #admin-panel {
+            display: none;
+            background: #1a1a1a;
+            border: 2px solid var(--accent);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #admin-panel h2 { margin-top: 0; font-size: 1.3rem; color: var(--accent); }
+        .form-group {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .form-group label { font-size: 0.9rem; color: #ccc; }
+        .form-group input {
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 5px;
+        }
+        .row-inline {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .row-inline input { flex: 1; }
+        .btn-action {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 10px 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .btn-action:hover { opacity: 0.9; }
+        .btn-secondary {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 
-        <!-- Replace your server icon by uploading an image file named "list_icon.png"-->
-        <link rel="icon" href="/list_icon.png" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@500;700&display=swap"
-            rel="stylesheet"
-        />
-        <link rel="stylesheet" type="text/css" href="/css/reset.css" />
-        <link rel="stylesheet" type="text/css" href="/css/typography.css" />
-        <link rel="stylesheet" type="text/css" href="/css/main.css" />
-        <link rel="stylesheet" type="text/css" href="/css/pages/list.css" />
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="/css/pages/leaderboard.css"
-        />
-        <link rel="stylesheet" type="text/css" href="/css/pages/roulette.css" />
-        <link rel="stylesheet" type="text/css" href="/css/components/nav.css" />
-        <link rel="stylesheet" type="text/css" href="/css/components/btn.css" />
-        <link
-            rel="stylesheet"
-            type="text/css"
-            href="/css/components/tabs.css"
-        />
-        <script src="https://unpkg.com/vue@3.2.31/dist/vue.global.js"></script>
-        <script src="https://unpkg.com/vue-router@4.0.14/dist/vue-router.global.prod.js"></script>
-        <script type="module" src="/js/main.js"></script>
-    </head>
-    <body id="app">
-        <header :class="{ dark: store.dark }">
-            <div class="logo">
-                <h2>Sample List</h2>
-                <p>v1.0.0</p>
+    <header>
+        <h1>The Circles List</h1>
+        <div class="menu-container">
+            <button class="menu-btn" onclick="toggleMenu()">•••</button>
+            <div id="dropdownMenu" class="dropdown-menu">
+                <button onclick="requestAdmin()">Modo Admin</button>
             </div>
-            <nav class="nav">
-                <router-link class="nav__tab" to="/">
-                    <span class="type-label-lg">List</span>
-                </router-link>
-                <router-link class="nav__tab" to="/leaderboard">
-                    <span class="type-label-lg">Leaderboard</span>
-                </router-link>
-                <router-link class="nav__tab" to="/roulette">
-                    <span class="type-label-lg">Roulette</span>
-                </router-link>
-                <div class="nav__actions">
-                    <button
-                        class="nav__icon"
-                        @click.prevent="store.toggleDark()"
-                    >
-                        <img
-                            :src="store.dark ? '/assets/light.svg' : '/assets/dark.svg'"
-                            alt=""
-                        />
-                    </button>
-                    <!-- Replace the '#' with your discord server's invite-->
-                    <a class="nav__icon" href="#">
-                        <img src="/assets/discord.svg" alt="Discord Logo" />
-                    </a>
-                    <!-- List record submission form, add a link to replace the '#' when putting a link to your list submission form-->
-                    <a
-                        class="nav__cta type-label-lg"
-                        href="#"
-                        target="_blank"
-                        >Submit Record</a
-                    >
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Panel de Administración (Oculto por defecto) -->
+        <div id="admin-panel">
+            <h2 id="panel-title">Subir Nuevo Nivel</h2>
+            <input type="hidden" id="edit-index" value="-1">
+            
+            <div class="form-group">
+                <label>Nombre del Nivel:</label>
+                <input type="text" id="level-name" placeholder="Ej: Nine Circles">
+            </div>
+            <div class="form-group">
+                <label>Creador:</label>
+                <input type="text" id="level-creator" placeholder="Ej: Zobros">
+            </div>
+            <div class="form-group">
+                <label>Top / Posición:</label>
+                <input type="number" id="level-top" placeholder="Ej: 1">
+            </div>
+            <div class="form-group">
+                <label>ID del Nivel:</label>
+                <div class="row-inline">
+                    <input type="text" id="level-id" placeholder="Ej: 3004351">
+                    <button class="btn-secondary" onclick="searchLevel()">Buscar en la página</button>
                 </div>
-            </nav>
-        </header>
-        <router-view :class="{ dark: store.dark }"></router-view>
-    </body>
+            </div>
+            <div class="form-group">
+                <label>Verificador (Opcional):</label>
+                <input type="text" id="level-verifier" placeholder="Ej: Riot">
+            </div>
+            <div class="form-group">
+                <label>Foto (Elige archivo de galería O pega link de YouTube):</label>
+                <input type="file" id="level-file" accept="image/*" style="margin-bottom: 5px;">
+                <input type="text" id="level-yt" placeholder="O pega enlace de YouTube (ej: https://youtu.be/...)">
+            </div>
+            
+            <button class="btn-action" onclick="saveLevel()">Guardar Nivel</button>
+        </div>
+
+        <h2 class="category-title">La Circles List</h2>
+        <div id="levels-list">
+            <!-- Los niveles se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        // Cargar niveles guardados en el navegador o dejar uno de prueba
+        let levels = JSON.parse(localStorage.getItem('circles_levels')) || [
+            {
+                name: "Nine Circles",
+                creator: "Zobros",
+                top: 1,
+                id: "3004351",
+                verifier: "Riot",
+                thumb: "https://img.youtube.com/vi/ca498cf1_UA/hqdefault.jpg"
+            }
+        ];
+
+        let isAdmin = localStorage.getItem('circles_is_admin') === 'true';
+
+        window.onload = function() {
+            if (isAdmin) {
+                document.getElementById('admin-panel').style.display = 'block';
+            }
+            renderLevels();
+        };
+
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function requestAdmin() {
+            toggleMenu();
+            let pass = prompt("Introduce la contraseña de Administrador:");
+            if (pass === "6767XDXD") {
+                localStorage.setItem('circles_is_admin', 'true');
+                alert("¡Contraseña correcta! Recargando con poderes de administrador...");
+                location.reload();
+            } else if (pass !== null) {
+                alert("Contraseña incorrecta.");
+            }
+        }
+
+        // Extraer ID de YouTube para obtener su miniatura automáticamente
+        function getYouTubeThumbnail(url) {
+            let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            let match = url.match(regExp);
+            if (match && match[2].length === 11) {
+                return `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
+            }
+            return null;
+        }
+
+        function saveLevel() {
+            const name = document.getElementById('level-name').value;
+            const creator = document.getElementById('level-creator').value;
+            const top = document.getElementById('level-top').value;
+            const id = document.getElementById('level-id').value;
+            const verifier = document.getElementById('level-verifier').value;
+            const ytLink = document.getElementById('level-yt').value;
+            const fileInput = document.getElementById('level-file');
+            const editIndex = parseInt(document.getElementById('edit-index').value);
+
+            if (!name || !creator || !top) {
+                alert("Por favor rellena al menos el Nombre, Creador y el Top.");
+                return;
+            }
+
+            let thumb = "";
+            
+            // Prioridad 1: Link de YouTube para detectar la miniatura
+            if (ytLink) {
+                let ytThumb = getYouTubeThumbnail(ytLink);
+                if (ytThumb) {
+                    thumb = ytThumb;
+                }
+            }
+
+            // Función para procesar y guardar el nivel
+            const finishSave = (finalThumb) => {
+                let levelData = {
+                    name,
+                    creator,
+                    top: parseInt(top),
+                    id,
+                    verifier,
+                    thumb: finalThumb || (editIndex !== -1 ? levels[editIndex].thumb : 'https://via.placeholder.com/90x50?text=No+Image')
+                };
+
+                if (editIndex === -1) {
+                    levels.push(levelData);
+                } else {
+                    levels[editIndex] = levelData;
+                    document.getElementById('edit-index').value = "-1";
+                    document.getElementById('panel-title').innerText = "Subir Nuevo Nivel";
+                }
+
+                // Ordenar por Top
+                levels.sort((a, b) => a.top - b.top);
+
+                localStorage.setItem('circles_levels', JSON.stringify(levels));
+                clearForm();
+                renderLevels();
+                alert("¡Nivel guardado correctamente!");
+            };
+
+            // Prioridad 2: Imagen subida desde la galería del celular
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    finishSave(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                finishSave(thumb);
+            }
+        }
+
+        function renderLevels() {
+            const listContainer = document.getElementById('levels-list');
+            listContainer.innerHTML = "";
+
+            if (levels.length === 0) {
+                listContainer.innerHTML = "<p style='color: #777; text-align: center;'>No hay niveles agregados todavía.</p>";
+                return;
+            }
+
+            levels.forEach((lvl, index) => {
+                let card = document.createElement('div');
+                card.className = 'level-card';
+                card.innerHTML = `
+                    <div class="level-info">
+                        <img src="${lvl.thumb}" class="level-thumb" alt="Miniatura">
+                        <div class="level-details">
+                            <h3>#${lvl.top} - ${lvl.name}</h3>
+                            <p>Creador: ${lvl.creator} ${lvl.verifier ? '| Verificador: ' + lvl.verifier : ''}</p>
+                            ${lvl.id ? '<p style="font-size: 0.8rem; color: var(--accent);">ID: ' + lvl.id + '</p>' : ''}
+                        </div>
+                    </div>
+                    ${isAdmin ? `
+                    <div class="admin-controls">
+                        <button class="btn-edit" onclick="editLevel(${index})">Editar</button>
+                        <button class="btn-delete" onclick="deleteLevel(${index})">Borrar</button>
+                    </div>` : ''}
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        function editLevel(index) {
+            let lvl = levels[index];
+            document.getElementById('level-name').value = lvl.name;
+            document.getElementById('level-creator').value = lvl.creator;
+            document.getElementById('level-top').value = lvl.top;
+            document.getElementById('level-id').value = lvl.id || '';
+            document.getElementById('level-verifier').value = lvl.verifier || '';
+            document.getElementById('edit-index').value = index;
+            document.getElementById('panel-title').innerText = "Editar Nivel (Top " + lvl.top + ")";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteLevel(index) {
+            if (confirm("¿Seguro que quieres borrar este nivel?")) {
+                levels.splice(index, 1);
+                localStorage.setItem('circles_levels', JSON.stringify(levels));
+                renderLevels();
+            }
+        }
+
+        // Botón de buscar ID en Level Search (GDBrowser)
+        function searchLevel() {
+            let name = document.getElementById('level-name').value;
+            if (!name) {
+                alert("Primero escribe el nombre del nivel en el título para poder buscarlo.");
+                return;
+            }
+            // Abre una pestaña externa con GDBrowser buscando el nombre del nivel automáticamente
+            let searchUrl = `https://gdbrowser.com/search/${encodeURIComponent(name)}`;
+            window.open(searchUrl, '_blank');
+        }
+
+        function clearForm() {
+            document.getElementById('level-name').value = '';
+            document.getElementById('level-creator').value = '';
+            document.getElementById('level-top').value = '';
+            document.getElementById('level-id').value = '';
+            document.getElementById('level-verifier').value = '';
+            document.getElementById('level-yt').value = '';
+            document.getElementById('level-file').value = '';
+        }
+    </script>
+</body>
 </html>
